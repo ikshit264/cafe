@@ -2,11 +2,11 @@
 
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
-import { FiClock, FiCheck, FiCoffee, FiX } from 'react-icons/fi'
+import { FiClock, FiCheck, FiCoffee, FiX, FiLoader } from 'react-icons/fi'
 
 type OrderStatus = 'pending' | 'confirmed' | 'inprogress' | 'ready' | 'cancelled'
 
-interface Order {
+export interface Order {
     id: string
     customer_name: string
     order_items: {
@@ -42,6 +42,8 @@ const API_BASE_URL = "http://23.20.192.56:8000/order"
 
 export default function OrderManagement() {
     const [orders, setOrders] = useState<Order[]>([])
+    const [loadingOrders, setLoadingOrders] = useState<Set<string>>(new Set())
+    const [loading, setLoading] = useState(true) // Lazy loader state
 
     // Fetch orders from the API
     useEffect(() => {
@@ -52,6 +54,8 @@ export default function OrderManagement() {
                 setOrders(response.data.orders)
             } catch (error) {
                 console.error('Error fetching orders:', error)
+            } finally {
+                setLoading(false)  // Set loading to false after data is fetched
             }
         }
 
@@ -59,6 +63,9 @@ export default function OrderManagement() {
     }, [])
 
     const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+        // Mark the order as loading before updating
+        setLoadingOrders((prevLoading) => new Set(prevLoading.add(orderId)))
+
         try {
             await axios.patch(`${API_BASE_URL}/update-order/${orderId}`, { status: newStatus })
             setOrders((prevOrders) =>
@@ -68,19 +75,35 @@ export default function OrderManagement() {
             )
         } catch (error) {
             console.error('Error updating order status:', error)
+        } finally {
+            // Remove the order from loading state after update
+            setLoadingOrders((prevLoading) => {
+                const newLoading = new Set(prevLoading)
+                newLoading.delete(orderId)
+                return newLoading
+            })
         }
     }
 
-    const StatusButton: React.FC<{ status: OrderStatus; isActive: boolean; onClick: () => void }> = ({ status, isActive, onClick }) => (
+    const StatusButton: React.FC<{ status: OrderStatus; isActive: boolean; isLoading: boolean; onClick: () => void }> = ({ status, isActive, isLoading, onClick }) => (
         <button
             onClick={onClick}
-            className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${isActive ? statusColors[status] : 'bg-gray-200 text-gray-800'
-                }`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${isActive ? statusColors[status] : 'bg-gray-200 text-gray-800'}`}
+            disabled={isLoading}  // Disable the button while loading
         >
-            {statusIcons[status]}
+            {isLoading ? <FiLoader className="w-4 h-4 animate-spin" /> : statusIcons[status]}
             {status}
         </button>
     )
+
+    if (loading) {
+        // Show loading spinner while data is being fetched
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                <FiLoader className="animate-spin w-8 h-8 text-gray-500" />
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gray-100 p-8 text-black">
@@ -127,21 +150,25 @@ export default function OrderManagement() {
                                             <StatusButton
                                                 status="confirmed"
                                                 isActive={order.status === 'confirmed'}
+                                                isLoading={loadingOrders.has(order.id)}
                                                 onClick={() => updateOrderStatus(order.id, 'confirmed')}
                                             />
                                             <StatusButton
                                                 status="inprogress"
                                                 isActive={order.status === 'inprogress'}
+                                                isLoading={loadingOrders.has(order.id)}
                                                 onClick={() => updateOrderStatus(order.id, 'inprogress')}
                                             />
                                             <StatusButton
                                                 status="ready"
                                                 isActive={order.status === 'ready'}
+                                                isLoading={loadingOrders.has(order.id)}
                                                 onClick={() => updateOrderStatus(order.id, 'ready')}
                                             />
                                             <StatusButton
                                                 status="cancelled"
                                                 isActive={order.status === 'cancelled'}
+                                                isLoading={loadingOrders.has(order.id)}
                                                 onClick={() => updateOrderStatus(order.id, 'cancelled')}
                                             />
                                         </div>
