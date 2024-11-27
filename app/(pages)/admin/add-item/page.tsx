@@ -20,7 +20,7 @@ type MenuItem = {
     category: Category
 }
 
-const API_BASE_URL = "http://23.20.192.56:8000/menu"
+const API_BASE_URL = "https://menu.anatrix.tech/menu"
 // const API_BASE_URL = "http://localhost:8000/menu"
 
 const ItemForm: React.FC<{

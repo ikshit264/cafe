@@ -20,7 +20,7 @@ type MenuItem = {
 
 type CartItem = MenuItem & { quantity: number }
 
-const API_BASE_URL = "http://23.20.192.56:8000"
+const API_BASE_URL = "https://menu.anatrix.tech"
 
 export default function AppleStyleCafeMenu() {
   const [activeCategory, setActiveCategory] = useState('Coffee')

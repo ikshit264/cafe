@@ -5,7 +5,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { FiLoader } from 'react-icons/fi';
 
-const API_BASE_URL = "http://23.20.192.56:8000" // Replace with your API base URL
+const API_BASE_URL = "https://menu.anatrix.tech" // Replace with your API base URL
 
 export default function AdminCafe() {
     const [orders, setOrders] = useState<any[]>([]);  // State to store the orders
