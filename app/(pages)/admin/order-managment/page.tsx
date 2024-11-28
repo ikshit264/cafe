@@ -38,7 +38,7 @@ const statusIcons: Record<OrderStatus, React.ReactNode> = {
 }
 
 const API_BASE_URL = "https://23.20.192.56:8000/order"
-// const API_BASE_URL = "http://localhost:8000/menu" 
+// const API_BASE_URL = "http://localhost:8000/menu"
 
 export default function OrderManagement() {
     const [orders, setOrders] = useState<Order[]>([])
