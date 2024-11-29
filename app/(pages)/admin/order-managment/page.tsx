@@ -37,7 +37,7 @@ const statusIcons: Record<OrderStatus, React.ReactNode> = {
     cancelled: <FiX className="w-4 h-4" />,
 }
 
-const API_BASE_URL = "https://23.20.192.56:8000/order"
+const API_BASE_URL = "https://menu.anatrix.tech/order"
 // const API_BASE_URL = "http://localhost:8000/menu"
 
 export default function OrderManagement() {
