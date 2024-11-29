@@ -36,13 +36,6 @@ export default function AppleStyleCafeMenu() {
     Pastries: []
   })
 
-  const getImageByCategory = (category: string): string => {
-    const categoryImageMap: Record<string, string> = {
-      Coffee: '/images/coffee-static.jpg',
-      Tea: '/images/tea-static.jpg',
-      Pastries: '/images/pastry-static.jpg'
-    };
-  }
 
   const categorizeItems = (items: MenuItem[]) => {
     const categories: Record<string, MenuItem[]> = {
